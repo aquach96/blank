@@ -1,0 +1,40 @@
+function onFormSubmit(e) {
+  var formResponse = e.values;
+  var templateFileId = "1YTNAOSL1PueOcnHqU86wby_VqLsf0ato1hUvhO62p9A"; // Template Document ID
+
+  var templateFile = DriveApp.getFileById(templateFileId);
+  var newFolder = DriveApp.getFolderById("YOUR_FOLDER_ID"); // Replace with the ID of the folder where you want to store generated documents
+  var newDoc = templateFile.makeCopy(newFolder);
+
+  var doc = DocumentApp.openById(newDoc.getId());
+  var body = doc.getBody();
+
+  // Define form responses
+  var responses = [
+    formResponse[1], // Employee Name
+    formResponse[2], // Date of Incident
+    formResponse[3], // Description of Incident
+    formResponse[4]  // Action Taken by Supervisor
+  ];
+
+  // Define titles for form responses
+  var titles = [
+    "Employee Name",
+    "Date of Incident",
+    "Description of Incident",
+    "Action Taken by Supervisor"
+  ];
+
+  // Replace titles with form responses
+  for (var i = 0; i < responses.length; i++) {
+    var title = titles[i];
+    var titleElement = body.findText(title);
+    if (titleElement !== null) {
+      var titleText = titleElement.getElement().getParent().asText();
+      var titleTextIndex = titleText.getText().indexOf(title);
+      titleText.insertText(titleTextIndex + title.length + 1, responses[i]);
+    }
+  }
+
+  doc.saveAndClose();
+}
